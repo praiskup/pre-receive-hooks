@@ -1,0 +1,52 @@
+#! /bin/bash
+
+# No added macros in spec changelog
+# run like: ./script EXAMPLE.spec OLD_COMMIT NEW_COMMIT
+
+spec=$1
+old=$2
+new=$3
+
+skip () { echo >&2 "SKIP: $*" ;  exit 0; }
+die ()  { echo >&2 "FAIL: $*" ; exit 1; }
+
+# get_changelog SPEC REF
+# ----------------------
+get_changelog ()
+{
+    local spec=$1 ref=$2 print=false
+    while read -r line; do
+        case $line in
+        %changelog*)
+            $print && "multiple %changelogs"
+            print=:
+            continue
+            ;;
+        *)
+            $print && echo "$line"
+            ;;
+        esac
+    done <<< "$(git show "$ref:$spec")"
+}
+
+while read -r line; do
+    case $line in
+    \>\ *)
+        # Drop the leading part.
+        line=${line##> }
+
+        # Drop properly escaped percent signs.
+        line=${line//%%/_}
+
+        # Drop trainling %
+        line=${line%%%}
+
+        case $line in
+        *%*)
+            die "blocking attempt to add macro into changelog"
+            ;;
+        esac
+        ;;
+    esac
+done <<<"$(diff <(get_changelog "$spec" "$old") \
+                <(get_changelog "$spec" "$new"))"
