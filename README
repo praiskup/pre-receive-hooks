@@ -1,0 +1,3 @@
+Test like:
+
+$ ln -s the-cloned-repo/pre-recieve your-bare-origin-repo.git/hooks/pre-recieve

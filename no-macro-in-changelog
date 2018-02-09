@@ -15,7 +15,7 @@ die ()  { echo >&2 "FAIL: $*" ; exit 1; }
 get_changelog ()
 {
     local spec=$1 ref=$2 print=false
-    while read -r line; do
+    while IFS= read -r line; do
         case $line in
         %changelog*)
             $print && skip "multiple %changelogs"
@@ -29,7 +29,7 @@ get_changelog ()
     done <<< "$(git show "$ref:$spec")"
 }
 
-while read -r line; do
+while IFS= read -r line; do
     case $line in
     \>\ *)
         # Drop the leading part.
