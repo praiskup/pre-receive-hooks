@@ -1,3 +1,5 @@
 Test like:
 
 $ ln -s the-cloned-repo/pre-recieve your-bare-origin-repo.git/hooks/pre-recieve
+
+more info here: https://pagure.io/releng/issue/7300
